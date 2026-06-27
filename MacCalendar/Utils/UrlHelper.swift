@@ -8,9 +8,26 @@
 import Foundation
 
 struct UrlHelper{
-    /// 规范化一个 URL 对象。如果它没有网络协议（http/https），则尝试为其添加 https://。
-    /// - Parameter url: 一个输入的 URL 对象。
-    /// - Returns: 一个带有网络协议的 URL 对象。
+    static func extractURL(from text: String) -> (url: URL?, remainingText: String) {
+        guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+            return (nil, text)
+        }
+        let range = NSRange(text.startIndex..., in: text)
+        guard let match = detector.firstMatch(in: text, options: [], range: range),
+              let matchRange = Range(match.range, in: text),
+              let url = match.url else {
+            return (nil, text)
+        }
+        var remaining = text
+        remaining.removeSubrange(matchRange)
+        remaining = remaining.trimmingCharacters(in: .whitespacesAndNewlines)
+        remaining = remaining.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n")
+        return (url, remaining)
+    }
+
     static func normalizeURL(from url: URL) -> URL {
         if let scheme = url.scheme, scheme.lowercased() == "http" || scheme.lowercased() == "https" {
             return url

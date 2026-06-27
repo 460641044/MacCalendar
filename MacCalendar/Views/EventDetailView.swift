@@ -72,8 +72,18 @@ struct EventDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                if let meetingUrl = extracted.url {
+                    let url = UrlHelper.normalizeURL(from: meetingUrl)
+                    HStack{
+                        Image(systemName: "link")
+                            .frame(width:20)
+                            .scaledToFit()
+                        Link(url.absoluteString, destination: url)
+                            .font(.subheadline)
+                    }
+                }
             }
-            
+
             if let organizer = event.organizer {
                 let name = organizer.name ?? ""
                 
@@ -138,16 +148,6 @@ struct EventDetailView: View {
                 }
             }
 
-            if event.url == nil, let location = event.location {
-                let extracted = UrlHelper.extractURL(from: location)
-                if let meetingUrl = extracted.url {
-                    let url = UrlHelper.normalizeURL(from: meetingUrl)
-                    HStack{
-                        Image(systemName: "link")
-                        Link(url.absoluteString, destination: url)
-                    }
-                }
-            }
         }
         .padding()
         .frame(width:350)

@@ -129,16 +129,18 @@ struct EventDetailView: View {
                 }
             }
             
-            Divider()
-            
-            ScrollView{
-                Text(event.notes ?? "")
-                    .font(.body)
-                    .lineLimit(nil)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(minHeight:50,alignment: .topLeading)
+            if let notes = event.notes, !notes.isEmpty {
+                Divider()
+                HStack(alignment: .top) {
+                    Image(systemName: "doc.text")
+                        .frame(width:20)
+                        .scaledToFit()
+                    Text(notes)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
-            .frame(maxHeight: 500)
             
             if let event_url = event.url {
                 let url = UrlHelper.normalizeURL(from: event_url)

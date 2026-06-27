@@ -61,13 +61,16 @@ struct EventDetailView: View {
             .foregroundColor(.secondary)
             
             if let location = event.location {
-                HStack{
-                    Image(systemName: "location")
-                        .frame(width:20)
-                        .scaledToFit()
-                    Text(location.replacingOccurrences(of: "\n", with: " "))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                let extracted = UrlHelper.extractURL(from: location)
+                if !extracted.remainingText.isEmpty {
+                    HStack{
+                        Image(systemName: "location")
+                            .frame(width:20)
+                            .scaledToFit()
+                        Text(extracted.remainingText.replacingOccurrences(of: "\n", with: " "))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             
@@ -127,11 +130,22 @@ struct EventDetailView: View {
             }
             .frame(maxHeight: 500)
             
-            if let event_url = event.url{
+            if let event_url = event.url {
                 let url = UrlHelper.normalizeURL(from: event_url)
                 HStack{
                     Image(systemName: "link")
-                    Link(url.absoluteString,destination: url)
+                    Link(url.absoluteString, destination: url)
+                }
+            }
+
+            if event.url == nil, let location = event.location {
+                let extracted = UrlHelper.extractURL(from: location)
+                if let meetingUrl = extracted.url {
+                    let url = UrlHelper.normalizeURL(from: meetingUrl)
+                    HStack{
+                        Image(systemName: "link")
+                        Link(url.absoluteString, destination: url)
+                    }
                 }
             }
         }
